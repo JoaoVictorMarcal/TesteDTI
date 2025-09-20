@@ -1,8 +1,12 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace testeDTI.Models
 {
     public class Lead
     {
+        [Key]
         public int Id { get; set; }
+        [Required(ErrorMessage = "É obrigatorio colocar Nome")]
         public string ContactFirstName { get; set; }
         public string? ContactFullName { get; set; }
         public DateTime DateCreated { get; set; }
