@@ -20,14 +20,16 @@ namespace testeDTI.Controllers
         [HttpPost]
         public async Task<IActionResult> AddLeads([FromBody] Lead lead)
         {
-            if (!ModelState.IsValid) {
+            lead.Status = "novo";
+            if (!ModelState.IsValid)
+            {
                 return BadRequest(ModelState);
             }
-            
+
             _appDbContext.BancoLeads.Add(lead);
             await _appDbContext.SaveChangesAsync();
 
-            return Created("Lead adicionado",lead);
+            return Created("Lead adicionado", lead);
         }
 
         [HttpGet]
@@ -75,6 +77,41 @@ namespace testeDTI.Controllers
 
             return Ok("Lead deletado");
         }
+
+        [HttpPost("{id}/aceito")]
+        public async Task<IActionResult> LeadAceito(int id)
+        {
+            var lead = await _appDbContext.BancoLeads.FindAsync(id);
+            if (lead == null)
+            {
+                return NotFound("Lead não encontrado");
+            }
+
+            lead.Status = "aceito";
+            if (lead.Price > 500)
+            {
+                lead.Price = lead.Price * 0.9m;
+            }
+            Console.WriteLine($"E-mail enviado para vendas@test.com");
+            await _appDbContext.SaveChangesAsync();
+            return Ok(lead);
+        }
+
+        [HttpPost("{id}/negado")]
+        public async Task<IActionResult> LeadNegado(int id)
+        {
+            var lead = await _appDbContext.BancoLeads.FindAsync(id);
+            if (lead == null)
+            {
+                return NotFound("Lead não encontrado");
+            }
+            lead.Status = "recusado";
+            await _appDbContext.SaveChangesAsync();
+            return Ok(lead);
+        }
+
+
+
 
 
     }
